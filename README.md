@@ -40,6 +40,37 @@
 
    
   
+<br>
+
+---
+
+## 🚀 3단계 - 예약 추가 / 취소
 
 
+### 📝 기능 요구사항
+✅ API 명세를 따라 예약 추가 API 와 삭제 API를 구현하세요.  
+✅ 예약 추가와 취소가 잘 동작해야합니다.
 
+
+### 💻 구현 전략
+
+1. 예약 추가 API  
+   ➡️ URI: `POST: /reservations`  
+   ➡️ RequestBody -> 요청 JSON 데이터를 `ReservationRequest DTO` 객체로 매핑한다.
+    ```json
+   {
+    "date": "2023-08-05",
+    "name": "브라운",
+    "time": "15:40"
+    }
+   ```    
+   ➡️ 응답: `201 Created` + 새롭게 추가된 예약 내용을 `ReservationResponse DTO`로 변환하여 응답한다.
+
+
+2. 예약 삭제 API  
+   ➡️ URI: `DELETE: /reservations/{reservationId}`  
+   ➡️ 응답: `204 No Content` 응답 
+
+
+3. ReservationService 클래스 작성  
+   ➡️ 조회, 생성, 삭제 로직은 서비스 레이어에서 담당하도록 변경  
