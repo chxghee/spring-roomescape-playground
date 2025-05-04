@@ -110,3 +110,172 @@
 }
 ```
 
+<br>
+
+---
+
+## API 명세
+
+### 1. 전체 예약 조회
+> 모든 예약 데이터를 조회하는 API
+
+
+#### 1. Request
+HTTP Method: `GET`  
+URI: `/reservations`
+
+<br>
+
+#### 2. Response
+상태 코드: `200 Ok`  
+Body
+```json
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2023-01-01",
+        "time": "10:00"
+    },
+    {
+        "id": 2,
+        "name": "브라운",
+        "date": "2023-01-02",
+        "time": "11:00"
+    }
+]
+```
+<br>
+
+### 2. 새로운 에약 등록
+> 예약자, 예약 날짜, 예약 시간을 입력받아 새로운 예약을 등록하는 API
+
+
+#### 1. Request
+HTTP Method: `POST`  
+URI: `/reservations`
+Body
+```json
+{
+    "date": "2023-08-05",
+    "name": "브라운",
+    "time": "15:40"
+}
+```
+
+<br>
+
+#### 2. Response
+상태 코드: `201 Created`  
+Body
+```json
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time": "15:40"
+}
+```
+
+<br>
+
+#### 3. 예외 - 요청 데이터 누락
+
+> 필수 예약 데이터(name, date, time)가 누락 되었을때 발생한다 
+
+
+
+#### 1) Request  
+Body
+```json
+{
+    "date": " ",
+    "name": "브라운",
+    "time": "15:40"
+}
+```
+
+예약 데이터의 필드가 null이거나 빈 문자열일때 예외가 발생한다
+
+#### 2) Response  
+상태 코드: `400 Bad Request`   
+Body
+```json
+{
+    "title": "필수 입력값 누락",
+    "status": 400,
+    "detail": "[date]값이 비어 있습니다!",
+    "instance": "/reservations"
+}
+```
+
+<br>
+
+#### 4. 예외 - 예약 날짜 포맷 불일치
+
+> 예약 날짜 형식이 `date: "yyyy-MM-dd"` / `time: "HH:MM"` 를 만족해야 한다.
+
+
+#### 1) Request
+Body
+```json
+{
+    "date": "2024-1-5",
+    "name": "브라운",
+    "time": "15:40"
+}
+```
+월-일 표현이 `01-05` 형식과 일치하지 않아 예외가 발생한다.
+
+#### 2) Response  
+상태 코드: `400 Bad Request`   
+Body
+```json
+{
+  "title": "시간 포맷 오류",
+  "status": 400,
+  "detail": "시간은 yyyy-MM-dd / HH:mm 형식이어야 합니다.",
+  "instance": "/reservations"
+}
+```
+
+
+<br>
+
+### 3. 예약 삭제
+
+> 특정 예약을 삭제하는 API 
+
+
+#### 1. Request
+HTTP Method: `DELETE`  
+URI: `/reservations/{reservationId}`
+
+<br>
+
+#### 2. Response
+상태 코드: `204 No Content`  
+
+<br>
+
+#### 3. 예외 - 삭제 요청한 예약 정보 없음
+
+> 삭제를 요청한 예약 정보가 존재하지 않을 때 예외가 발생한다.
+
+#### 1. Request
+HTTP Method: `DELETE`  
+URI: `/reservations/102`  
+(존재하지 않는 102번 예약을 삭제요청)
+
+#### 2. Response  
+
+상태 코드: `400 Bad Request`   
+Body
+```json
+{
+  "title": "예약 정보 없음",
+  "status": 400,
+  "detail": "삭제 요청한 102번 예약은 존재하지 않아 삭제가 불가능합니다!",
+  "instance": "/reservations/2"
+}
+```
