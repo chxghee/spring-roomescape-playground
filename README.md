@@ -74,3 +74,39 @@
 
 3. ReservationService 클래스 작성  
    ➡️ 조회, 생성, 삭제 로직은 서비스 레이어에서 담당하도록 변경  
+
+<br>
+
+---
+
+## 🚀 4단계 - 예외 처리
+
+
+### 📝 기능 요구사항
+✅ 예약 관련 API 호출 시 에러가 발생하는 경우 중 요청의 문제인 경우 Status Code를 400으로 응답하세요.    
+
+
+
+### 💻 구현 전략
+
+1. 누락된 예약 요청 데이터
+   ➡️ 예약 데이터(date,name,time) 중 하나라도 null이거나 빈 문자열일떄 `EmptyValueException`가 발생한다.    
+
+
+2. 입력 시간의 형식 오류  
+   ➡️ 입력된 시간 관련 데이터가 형식에 맞지 않을때 `DateTimeParseException`가 발생한다.
+
+3. 존재하지 않는 예약의 삭제  
+   ➡️ 존재하지 않는 예약 삭제 요청시 `NotFoundReservationException`가 발생한다.
+
+### 응답되는 예외 데이터 구조
+`ErrorResult`
+```json
+{
+    "title": 오류에 대한 간략한 요약,
+    "status": Http 상태 코드,
+    "detail": 오류에 대한 자세한 설명,
+    "instance": 오류가 발생한 요청 경로 URI
+}
+```
+
