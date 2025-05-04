@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class TimeUtils {
-    
+public class DateTimeParser {
+
     public static LocalDate parseDate(String date) {
         return LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
     }

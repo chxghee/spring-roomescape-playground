@@ -1,7 +1,15 @@
 package roomescape.exception;
 
 public class EmptyValueException extends RuntimeException {
-  public EmptyValueException(String message) {
-    super(message);
-  }
+
+    private final String title;
+
+    public EmptyValueException(String title, String message) {
+        super(message);
+        this.title = title;
+    }
+
+    public String getTitle() {
+        return title;
+    }
 }
