@@ -213,7 +213,7 @@ Body
 
 #### 4. 예외 - 예약 날짜 포맷 불일치
 
-> 예약 날짜 형식이 `date: "yyyy-MM-dd"` / `time: "HH:MM"` 를 만족해야 한다.
+> 예약 날짜 형식이 `date: "yyyy-MM-dd"` / `time: "HH:mm"` 를 만족해야 한다.
 
 
 #### 1) Request
@@ -276,6 +276,6 @@ Body
   "title": "예약 정보 없음",
   "status": 400,
   "detail": "삭제 요청한 102번 예약은 존재하지 않아 삭제가 불가능합니다!",
-  "instance": "/reservations/2"
+  "instance": "/reservations/102"
 }
 ```
