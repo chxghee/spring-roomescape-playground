@@ -32,7 +32,7 @@ public class ReservationApiController {
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@RequestBody ReservationRequest reservationRequest) {
         ReservationResponse newReservation = reservationService.createReservation(reservationRequest);
-        return ResponseEntity.created(URI.create("/reservations/" + newReservation.getId()))
+        return ResponseEntity.created(URI.create("/reservations"))
                 .body(newReservation);
     }
 

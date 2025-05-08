@@ -28,4 +28,10 @@ public class GlobalExceptionHandler {
     public ErrorResult emptyValueException(EmptyValueException e, HttpServletRequest request) {
         return new ErrorResult(e.getTitle(), 400, e.getMessage(), request.getRequestURI());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RuntimeException.class)
+    public ErrorResult runtimeExceptionHandler(RuntimeException e, HttpServletRequest request) {
+        return new ErrorResult("알 수 없는 오류", 400, "관리자에게 문의 하세요", request.getRequestURI());
+    }
 }

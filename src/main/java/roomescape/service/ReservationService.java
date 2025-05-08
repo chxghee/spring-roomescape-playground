@@ -44,7 +44,7 @@ public class ReservationService {
         }
     }
 
-    public List<String> getNullOrBlankFiled(ReservationRequest reservationRequest) {
+    private List<String> getNullOrBlankFiled(ReservationRequest reservationRequest) {
         ArrayList<String> results = new ArrayList<>();
         if (reservationRequest.isDateBlankOrNull()) {
             results.add("date");

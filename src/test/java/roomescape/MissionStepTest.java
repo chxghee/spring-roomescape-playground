@@ -50,7 +50,7 @@ public class MissionStepTest {
                 .when().post("/reservations")
                 .then().log().all()
                 .statusCode(201)
-                .header("Location", "/reservations/1")
+                .header("Location", "/reservations")
                 .body("id", is(1));
 
         RestAssured.given().log().all()
