@@ -19,7 +19,6 @@ public class ReservationApiController {
 
     private final ReservationService reservationService;
 
-    @Autowired
     public ReservationApiController(ReservationService reservationService) {
         this.reservationService = reservationService;
     }

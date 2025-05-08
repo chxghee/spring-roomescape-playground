@@ -27,7 +27,7 @@ public class MissionStepTest {
     @Nested
     class 이단계 {
         @Test
-        public void 예약확인페이지로_이동하면_200_응답을_전송해야한다() {
+        void 예약확인페이지로_이동하면_200_응답을_전송해야한다() {
             RestAssured.given().log().all()
                     .when().get("/reservation")
                     .then().log().all()
@@ -35,7 +35,7 @@ public class MissionStepTest {
         }
 
         @Test
-        public void 예약_조회_요청이_성공하면_200_응답을_전송해야한다() {
+        void 예약_조회_요청이_성공하면_200_응답을_전송해야한다() {
             RestAssured.given().log().all()
                     .when().get("/reservations")
                     .then().log().all()
@@ -58,7 +58,7 @@ public class MissionStepTest {
         }
 
         @Test
-        public void 예약_등록_요청이_성공하면_201_응답을_전송해야한다() {
+        void 예약_등록_요청이_성공하면_201_응답을_전송해야한다() {
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
                     .body(params)
@@ -70,7 +70,7 @@ public class MissionStepTest {
         }
 
         @Test
-        public void 예약_조회_요청이_성공하면_200_응답을_전송해야한다() {
+        void 예약_조회_요청이_성공하면_200_응답을_전송해야한다() {
             RestAssured.given().log().all()
                     .when().get("/reservations")
                     .then().log().all()
@@ -79,7 +79,7 @@ public class MissionStepTest {
         }
 
         @Test
-        public void 예약_삭제_요청이_성공하면_204_응답을_전송해야한다() {
+        void 예약_삭제_요청이_성공하면_204_응답을_전송해야한다() {
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -102,7 +102,7 @@ public class MissionStepTest {
         private Map<String, String> params;
 
         @Test
-        public void 삭제할_예약이_없다면_성공하면_400_응답을_전송해야한다() {
+        void 삭제할_예약이_없다면_성공하면_400_응답을_전송해야한다() {
             RestAssured.given().log().all()
                     .when().delete("/reservations/1")
                     .then().log().all()
@@ -111,7 +111,7 @@ public class MissionStepTest {
         }
 
         @Test
-        public void 빈_값으로_예약_등록_요청하면_400_응답을_전송해야한다() {
+        void 빈_값으로_예약_등록_요청하면_400_응답을_전송해야한다() {
             Map<String, String> emptyParams = new HashMap<>();
             emptyParams.put("name", "");
             emptyParams.put("date", "2023-08-05");
@@ -127,7 +127,7 @@ public class MissionStepTest {
         }
 
         @Test
-        public void 올바르지_않는_시간_형식으로_예약_등록_요청하면_400_응답을_전송해야한다() {
+        void 올바르지_않는_시간_형식으로_예약_등록_요청하면_400_응답을_전송해야한다() {
             Map<String, String> emptyParams = new HashMap<>();
             emptyParams.put("name", "브라운");
             emptyParams.put("date", "2023-8-5");
