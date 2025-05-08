@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(RuntimeException.class)
     public ErrorResult runtimeExceptionHandler(RuntimeException e, HttpServletRequest request) {
+        System.out.println("잡힌 예외 타입: " + e.getClass().getName());  // 로그
         return new ErrorResult("알 수 없는 오류", 400, "관리자에게 문의 하세요", request.getRequestURI());
     }
 }

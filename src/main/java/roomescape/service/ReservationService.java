@@ -24,7 +24,7 @@ public class ReservationService {
     }
 
     public ReservationResponse createReservation(ReservationRequest reservationRequest) {
-        validateRequiredFields(reservationRequest);
+        reservationRequest.validateRequiredFields();
         Reservation newReservation = reservationRequest.toEntity(index.incrementAndGet());
         reservations.add(newReservation);
         return new ReservationResponse(newReservation);
@@ -37,24 +37,4 @@ public class ReservationService {
         }
     }
 
-    private void validateRequiredFields(ReservationRequest reservationRequest) {
-        List<String> nullOrBlankFiled = getNullOrBlankFiled(reservationRequest);
-        if (!nullOrBlankFiled.isEmpty()) {
-            throw new EmptyValueException("필수 입력값 누락", nullOrBlankFiled.toString() + " 값이 비어 있습니다!");
-        }
-    }
-
-    private List<String> getNullOrBlankFiled(ReservationRequest reservationRequest) {
-        ArrayList<String> results = new ArrayList<>();
-        if (reservationRequest.isDateBlankOrNull()) {
-            results.add("date");
-        }
-        if (reservationRequest.isNameBlankOrNull()) {
-            results.add("name");
-        }
-        if (reservationRequest.isTimeBlankOrNull()) {
-            results.add("time");
-        }
-        return results;
-    }
 }

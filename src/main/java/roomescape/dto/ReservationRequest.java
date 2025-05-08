@@ -1,7 +1,11 @@
 package roomescape.dto;
 
 import roomescape.entity.Reservation;
+import roomescape.exception.EmptyValueException;
 import roomescape.utils.DateTimeParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ReservationRequest {
@@ -20,16 +24,25 @@ public class ReservationRequest {
         return new Reservation(id, name, DateTimeParser.parseDate(date), DateTimeParser.parseTime(time));
     }
 
-    public boolean isDateBlankOrNull() {
-        return date == null || date.isBlank();
+    public void validateRequiredFields() {
+        List<String> nullOrBlankFiled = getNullOrBlankFiled();
+        if (!nullOrBlankFiled.isEmpty()) {
+            throw new EmptyValueException("필수 입력값 누락", nullOrBlankFiled.toString() + " 값이 비어 있습니다!");
+        }
     }
 
-    public boolean isNameBlankOrNull() {
-        return name == null || name.isBlank();
-    }
-
-    public boolean isTimeBlankOrNull() {
-        return name == null || name.isBlank();
+    private  List<String> getNullOrBlankFiled() {
+        List<String> results = new ArrayList<>();
+        if (date == null || date.isBlank()) {
+            results.add("date");
+        }
+        if (name == null || name.isBlank()) {
+            results.add("name");
+        }
+        if (time == null || time.isBlank()) {
+            results.add("time");
+        }
+        return results;
     }
 
     public String getDate() {
