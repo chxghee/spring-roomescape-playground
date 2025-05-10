@@ -1,6 +1,11 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.EmptyValueException;
@@ -10,15 +15,16 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class ReservationServiceTest {
 
-    private ReservationService reservationService = new ReservationService();
+    @Autowired
+    private ReservationService reservationService;
 
     @Test
     void 예약_추가시_공백인_항목이_있으면_예외가_발생해야_한다() {
         ReservationRequest reservationRequest = new ReservationRequest("2025-05-08", "", "12:00");
-
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(EmptyValueException.class);
     }
