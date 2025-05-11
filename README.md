@@ -40,6 +40,242 @@
 
    
   
+<br>
+
+---
+
+## 🚀 3단계 - 예약 추가 / 취소
+
+
+### 📝 기능 요구사항
+✅ API 명세를 따라 예약 추가 API 와 삭제 API를 구현하세요.  
+✅ 예약 추가와 취소가 잘 동작해야합니다.
+
+
+### 💻 구현 전략
+
+1. 예약 추가 API  
+   ➡️ URI: `POST: /reservations`  
+   ➡️ RequestBody -> 요청 JSON 데이터를 `ReservationRequest DTO` 객체로 매핑한다.
+    ```json
+   {
+    "date": "2023-08-05",
+    "name": "브라운",
+    "time": "15:40"
+    }
+   ```    
+   ➡️ 응답: `201 Created` + 새롭게 추가된 예약 내용을 `ReservationResponse DTO`로 변환하여 응답한다.
+
+
+2. 예약 삭제 API  
+   ➡️ URI: `DELETE: /reservations/{reservationId}`  
+   ➡️ 응답: `204 No Content` 응답 
+
+
+3. ReservationService 클래스 작성  
+   ➡️ 조회, 생성, 삭제 로직은 서비스 레이어에서 담당하도록 변경  
+
+<br>
+
+---
+
+## 🚀 4단계 - 예외 처리
+
+
+### 📝 기능 요구사항
+✅ 예약 관련 API 호출 시 에러가 발생하는 경우 중 요청의 문제인 경우 Status Code를 400으로 응답하세요.    
 
 
 
+### 💻 구현 전략
+
+1. 누락된 예약 요청 데이터
+   ➡️ 예약 데이터(date,name,time) 중 하나라도 null이거나 빈 문자열일떄 `EmptyValueException`가 발생한다.    
+
+
+2. 입력 시간의 형식 오류  
+   ➡️ 입력된 시간 관련 데이터가 형식에 맞지 않을때 `DateTimeParseException`가 발생한다.
+
+3. 존재하지 않는 예약의 삭제  
+   ➡️ 존재하지 않는 예약 삭제 요청시 `NotFoundReservationException`가 발생한다.
+
+### 응답되는 예외 데이터 구조
+`ErrorResult`
+```json
+{
+    "title": 오류에 대한 간략한 요약,
+    "status": Http 상태 코드,
+    "detail": 오류에 대한 자세한 설명,
+    "instance": 오류가 발생한 요청 경로 URI
+}
+```
+
+<br>
+
+---
+
+## API 명세
+
+### 1. 전체 예약 조회
+> 모든 예약 데이터를 조회하는 API
+
+
+#### 1. Request
+HTTP Method: `GET`  
+URI: `/reservations`
+
+<br>
+
+#### 2. Response
+상태 코드: `200 Ok`  
+Body
+```json
+[
+    {
+        "id": 1,
+        "name": "브라운",
+        "date": "2023-01-01",
+        "time": "10:00"
+    },
+    {
+        "id": 2,
+        "name": "브라운",
+        "date": "2023-01-02",
+        "time": "11:00"
+    }
+]
+```
+<br>
+
+### 2. 새로운 에약 등록
+> 예약자, 예약 날짜, 예약 시간을 입력받아 새로운 예약을 등록하는 API
+
+
+#### 1. Request
+HTTP Method: `POST`  
+URI: `/reservations`
+Body
+```json
+{
+    "date": "2023-08-05",
+    "name": "브라운",
+    "time": "15:40"
+}
+```
+
+<br>
+
+#### 2. Response
+상태 코드: `201 Created`  
+Body
+```json
+{
+    "id": 1,
+    "name": "브라운",
+    "date": "2023-08-05",
+    "time": "15:40"
+}
+```
+
+<br>
+
+#### 3. 예외 - 요청 데이터 누락
+
+> 필수 예약 데이터(name, date, time)가 누락 되었을때 발생한다 
+
+
+
+#### 1) Request  
+Body
+```json
+{
+    "date": " ",
+    "name": "브라운",
+    "time": "15:40"
+}
+```
+
+예약 데이터의 필드가 null이거나 빈 문자열일때 예외가 발생한다
+
+#### 2) Response  
+상태 코드: `400 Bad Request`   
+Body
+```json
+{
+    "title": "필수 입력값 누락",
+    "status": 400,
+    "detail": "[date]값이 비어 있습니다!",
+    "instance": "/reservations"
+}
+```
+
+<br>
+
+#### 4. 예외 - 예약 날짜 포맷 불일치
+
+> 예약 날짜 형식이 `date: "yyyy-MM-dd"` / `time: "HH:mm"` 를 만족해야 한다.
+
+
+#### 1) Request
+Body
+```json
+{
+    "date": "2024-1-5",
+    "name": "브라운",
+    "time": "15:40"
+}
+```
+월-일 표현이 `01-05` 형식과 일치하지 않아 예외가 발생한다.
+
+#### 2) Response  
+상태 코드: `400 Bad Request`   
+Body
+```json
+{
+  "title": "시간 포맷 오류",
+  "status": 400,
+  "detail": "시간은 yyyy-MM-dd / HH:mm 형식이어야 합니다.",
+  "instance": "/reservations"
+}
+```
+
+
+<br>
+
+### 3. 예약 삭제
+
+> 특정 예약을 삭제하는 API 
+
+
+#### 1. Request
+HTTP Method: `DELETE`  
+URI: `/reservations/{reservationId}`
+
+<br>
+
+#### 2. Response
+상태 코드: `204 No Content`  
+
+<br>
+
+#### 3. 예외 - 삭제 요청한 예약 정보 없음
+
+> 삭제를 요청한 예약 정보가 존재하지 않을 때 예외가 발생한다.
+
+#### 1. Request
+HTTP Method: `DELETE`  
+URI: `/reservations/102`  
+(존재하지 않는 102번 예약을 삭제요청)
+
+#### 2. Response  
+
+상태 코드: `400 Bad Request`   
+Body
+```json
+{
+  "title": "예약 정보 없음",
+  "status": 400,
+  "detail": "삭제 요청한 102번 예약은 존재하지 않아 삭제가 불가능합니다!",
+  "instance": "/reservations/102"
+}
+```
