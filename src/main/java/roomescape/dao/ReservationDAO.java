@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import roomescape.dto.ReservationRequest;
 import roomescape.entity.Reservation;
@@ -16,26 +15,9 @@ import java.util.Optional;
 @Component
 public class ReservationDAO {
 
-    private static final String URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
+    private static final String URL = "jdbc:h2:mem:database";
     private static final String USERNAME = "sa";
     private static final String PASSWORD = "";
-
-    @PostConstruct
-    public void createTable() {
-
-        final var query = "CREATE TABLE RESERVATION ( " +
-                "ID BIGINT unique PRIMARY KEY, " +
-                "NAME VARCHAR(20) ," +
-                "DATE VARCHAR(50) ," +
-                "TIME VARCHAR(50) " +
-                ")";
-
-        try (final var connection = getConnection()) {
-            connection.createStatement().execute(query);
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Connection getConnection() {
         // 드라이버 연결
