@@ -1,100 +1,89 @@
 package roomescape.dao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.dto.ReservationRequest;
 import roomescape.entity.Reservation;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.sql.PreparedStatement;
+import java.util.List;
 import java.util.Optional;
 
 @Component
 public class ReservationDAO {
 
-    private static final String URL = "jdbc:h2:mem:database";
-    private static final String USERNAME = "sa";
-    private static final String PASSWORD = "";
+    private final JdbcTemplate jdbcTemplate;
 
-    public Connection getConnection() {
-        // 드라이버 연결
+    public ReservationDAO(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    public Long insert(Reservation reservation) {
+        final var query = "insert into reservation(name, date, time) values(?, ?, ?)";
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
+            ps.setString(1, reservation.getName());
+            ps.setDate(2, java.sql.Date.valueOf(reservation.getDate()));
+            ps.setTime(3, java.sql.Time.valueOf(reservation.getTime()));
+            return ps;
+        }, keyHolder);
+
+        return keyHolder.getKey().longValue();
+    }
+
+    public List<Reservation> findAll() {
+        final var query = "select * from reservation";
+
+        return jdbcTemplate.query(
+                query,
+                (resultSet, rowNum) ->
+                        new Reservation(
+                                resultSet.getLong("id"),
+                                resultSet.getString("name"),
+                                resultSet.getDate("date").toLocalDate(),
+                                resultSet.getTime("time").toLocalTime()
+                        )
+        );
+    }
+
+    public Optional<Reservation> findById(Long id) {
+        final var query = "select * from reservation where id = ?";
+
         try {
-            return DriverManager.getConnection(URL, USERNAME, PASSWORD);
-        } catch (final SQLException e) {
-            System.err.println("DB 연결 오류:" + e.getMessage());
-            e.printStackTrace();
-            return null;
+            Reservation reservation = jdbcTemplate.queryForObject(
+                    query,
+                    (resultSet, rowNum) ->
+                            new Reservation(
+                                    resultSet.getLong("id"),
+                                    resultSet.getString("name"),
+                                    resultSet.getDate("date").toLocalDate(),
+                                    resultSet.getTime("time").toLocalTime()
+                            )
+                    , id);
+
+            return Optional.ofNullable(reservation);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 
-    public void addReservation(Reservation reservation) {
-        final var query = "INSERT INTO RESERVATION VALUES(?, ?, ?, ?)";
-        try (
-                final var connection = getConnection();
-                final var preparedStatement = connection.prepareStatement(query);
-        ) {
-            preparedStatement.setLong(1, reservation.getId());
-            preparedStatement.setString(2, reservation.getName());
-            preparedStatement.setString(3, reservation.getDate().toString());
-            preparedStatement.setString(4, reservation.getTime().toString());
-            preparedStatement.executeUpdate();
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public void update(Long reservationId, ReservationRequest reservationRequest) {
+        final var query = "update reservation set name = ?, date = ?, time = ? where id = ?";
+        jdbcTemplate.update(query,
+                reservationRequest.getName(),
+                reservationRequest.getDate(),
+                reservationRequest.getTime(),
+                reservationId);
     }
 
-    public Optional<Reservation> findReservation(Long id) {
-        final var query = "SELECT * FROM RESERVATION WHERE ID = ?";
-        try (
-                final var connection = getConnection();
-                final var preparedStatement = connection.prepareStatement(query);
-        ) {
-            preparedStatement.setLong(1, id);
-            final var resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                LocalDate date = LocalDate.parse(resultSet.getString("DATE"), DateTimeFormatter.ISO_DATE);
-                LocalTime time = LocalTime.parse(resultSet.getString("TIME"), DateTimeFormatter.ISO_TIME);
-                return Optional.of(new Reservation(
-                        resultSet.getLong("ID"),
-                        resultSet.getString("NAME"),
-                        date, time
-                ));
-            }
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return Optional.empty();
-    }
-
-    public void updateReservation(Long reservationId, ReservationRequest reservationRequest) {
-        final var query = "UPDATE RESERVATION SET NAME = ?, DATE = ?, TIME = ? WHERE ID = ?";
-        try (
-                final var connection = getConnection();
-                final var preparedStatement = connection.prepareStatement(query);
-        ) {
-            preparedStatement.setString(1, reservationRequest.getName());
-            preparedStatement.setString(2, reservationRequest.getDate());
-            preparedStatement.setString(3, reservationRequest.getTime());
-            preparedStatement.setLong(4, reservationId);
-            preparedStatement.executeUpdate();
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void deleteReservation(Long reservationId) {
-        final var query = "DELETE FROM RESERVATION WHERE ID = ?";
-        try (
-                final var connection = getConnection();
-                final var preparedStatement = connection.prepareStatement(query);
-        ) {
-            preparedStatement.setLong(1, reservationId);
-            preparedStatement.executeUpdate();
-        } catch (final SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public void delete(Long reservationId) {
+        final var query = "delete from reservation where id = ?";
+        jdbcTemplate.update(query, reservationId);
     }
 }
