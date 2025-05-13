@@ -1,86 +1,87 @@
 package roomescape.dao;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
 import roomescape.entity.Reservation;
-
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.*;
 
 @SpringBootTest
+@Transactional
 class ReservationDAOTest {
 
     @Autowired
     private ReservationDAO reservationDAO;
 
-    @BeforeEach
-    void 테스트DB_초기화() {
-        try (var connection = reservationDAO.getConnection();
-             var stmt = connection.createStatement()) {
-            stmt.execute("DELETE FROM RESERVATION");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Test
-    void addReservation() {
-        Reservation reservation = new Reservation(1L, "전서희", LocalDate.parse("2025-05-12"), LocalTime.parse("19:00"));
-        reservationDAO.addReservation(reservation);
+    void insertReservation() {
+        Reservation newReservation = new Reservation("이창희", LocalDate.now(), LocalTime.now());
+
+        reservationDAO.insert(newReservation);
+        List<Reservation> reservations = reservationDAO.findAll();
+
+        assertThat(reservations.size()).isEqualTo(1);
     }
 
     @Test
     void findReservation() {
-        Reservation reservation = new Reservation(1L, "전서희", LocalDate.parse("2025-05-12"), LocalTime.parse("19:00"));
-        reservationDAO.addReservation(reservation);
+        reservationDAO.insert(new Reservation("이창희", LocalDate.now(), LocalTime.now()));
+        reservationDAO.insert(new Reservation("전서희", LocalDate.now(), LocalTime.now()));
 
-        Optional<Reservation> findReservation = reservationDAO.findReservation(reservation.getId());
+        List<Reservation> findReservations = reservationDAO.findAll();
 
         assertSoftly(soft -> {
-            soft.assertThat(findReservation.isPresent()).isTrue();
-            soft.assertThat(findReservation.get().getId()).isEqualTo(reservation.getId());
-            soft.assertThat(findReservation.get().getName()).isEqualTo(reservation.getName());
-            soft.assertThat(findReservation.get().getDate()).isEqualTo(reservation.getDate());
-            soft.assertThat(findReservation.get().getTime()).isEqualTo(reservation.getTime());
+            soft.assertThat(findReservations).hasSize(2);
+            soft.assertThat(findReservations.get(0).getName()).isEqualTo("이창희");
+            soft.assertThat(findReservations.get(1).getName()).isEqualTo("전서희");
+        });
+    }
+
+    @Test
+    void findReservationById() {
+        Long id = reservationDAO.insert(new Reservation("이창희", LocalDate.parse("2025-05-05"), LocalTime.parse("12:00")));
+
+        Optional<Reservation> findReservation = reservationDAO.findById(id);
+
+        assertSoftly(soft -> {
+            soft.assertThat(findReservation).isPresent();
+            soft.assertThat(findReservation.get().getName()).isEqualTo("이창희");
+            soft.assertThat(findReservation.get().getDate()).isEqualTo("2025-05-05");
+            soft.assertThat(findReservation.get().getTime()).isEqualTo("12:00");
         });
     }
 
     @Test
     void updateReservation() {
-        Reservation reservation = new Reservation(1L, "전서희", LocalDate.parse("2025-05-12"), LocalTime.parse("19:00"));
-        reservationDAO.addReservation(reservation);
-        ReservationRequest updateRequest = new ReservationRequest( "2025-05-13","이창희", "20:00");
+        Long id = reservationDAO.insert(new Reservation("이창희", LocalDate.now(), LocalTime.now()));
+        ReservationRequest updateRequest = new ReservationRequest("2025-05-05", "전서희", "12:00");
 
-        reservationDAO.updateReservation(1L, updateRequest);
-        Reservation findReservation = reservationDAO.findReservation(reservation.getId()).get();
+        reservationDAO.update(id, updateRequest);
+        Optional<Reservation> updatedReservation = reservationDAO.findById(id);
 
         assertSoftly(soft -> {
-            soft.assertThat(findReservation.getName()).isEqualTo(updateRequest.getName());
-            soft.assertThat(findReservation.getDate()).isEqualTo(updateRequest.getDate());
-            soft.assertThat(findReservation.getTime()).isEqualTo(updateRequest.getTime());
+            soft.assertThat(updatedReservation).isPresent();
+            soft.assertThat(updatedReservation.get().getName()).isEqualTo(updateRequest.getName());
+            soft.assertThat(updatedReservation.get().getDate()).isEqualTo(updateRequest.getDate());
+            soft.assertThat(updatedReservation.get().getTime()).isEqualTo(updateRequest.getTime());
         });
     }
 
     @Test
     void deleteReservation() {
-        Reservation reservation = new Reservation(1L, "전서희", LocalDate.parse("2025-05-12"), LocalTime.parse("19:00"));
-        reservationDAO.addReservation(reservation);
-        Long deleteId = 1L;
+        Long id = reservationDAO.insert(new Reservation("이창희", LocalDate.now(), LocalTime.now()));
 
-        reservationDAO.deleteReservation(deleteId);
-        Optional<Reservation> findReservation = reservationDAO.findReservation(deleteId);
+        reservationDAO.delete(id);
+        Optional<Reservation> findReservation = reservationDAO.findById(id);
 
-        assertThat(findReservation.isEmpty()).isTrue();
+        assertThat(findReservation).isEmpty();
     }
-
 }

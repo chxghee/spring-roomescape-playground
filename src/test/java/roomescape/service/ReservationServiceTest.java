@@ -1,8 +1,6 @@
 package roomescape.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,7 +31,7 @@ class ReservationServiceTest {
     void 예약_추가에_성공하면_예약번호가_생성되어야_한다() {
         ReservationRequest reservationRequest = new ReservationRequest("2025-05-08", "브라운", "12:00");
         ReservationResponse reservation = reservationService.createReservation(reservationRequest);
-        assertThat(reservation.getId()).isEqualTo(1);
+        assertThat(reservation.getId()).isEqualTo(1L);
     }
 
     @Test
