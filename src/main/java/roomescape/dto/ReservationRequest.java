@@ -20,8 +20,8 @@ public class ReservationRequest {
         this.time = time;
     }
 
-    public Reservation toEntity(Long id) {
-        return new Reservation(id, name, DateTimeParser.parseDate(date), DateTimeParser.parseTime(time));
+    public Reservation toEntity() {
+        return new Reservation(name, DateTimeParser.parseDate(date), DateTimeParser.parseTime(time));
     }
 
     public void validateRequiredFields() {
