@@ -1,6 +1,5 @@
 package roomescape.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,9 +16,11 @@ import java.util.Optional;
 public class ReservationDAO {
 
     private final JdbcTemplate jdbcTemplate;
+    private final ReservationRowMapper reservationRowMapper;
 
-    public ReservationDAO(JdbcTemplate jdbcTemplate) {
+    public ReservationDAO(JdbcTemplate jdbcTemplate, ReservationRowMapper reservationRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.reservationRowMapper = reservationRowMapper;
     }
 
     public Long insert(Reservation reservation) {
@@ -40,33 +41,14 @@ public class ReservationDAO {
     public List<Reservation> findAll() {
         final var query = "select * from reservation";
 
-        return jdbcTemplate.query(
-                query,
-                (resultSet, rowNum) ->
-                        new Reservation(
-                                resultSet.getLong("id"),
-                                resultSet.getString("name"),
-                                resultSet.getDate("date").toLocalDate(),
-                                resultSet.getTime("time").toLocalTime()
-                        )
-        );
+        return jdbcTemplate.query(query, reservationRowMapper);
     }
 
     public Optional<Reservation> findById(Long id) {
         final var query = "select * from reservation where id = ?";
 
         try {
-            Reservation reservation = jdbcTemplate.queryForObject(
-                    query,
-                    (resultSet, rowNum) ->
-                            new Reservation(
-                                    resultSet.getLong("id"),
-                                    resultSet.getString("name"),
-                                    resultSet.getDate("date").toLocalDate(),
-                                    resultSet.getTime("time").toLocalTime()
-                            )
-                    , id);
-
+            Reservation reservation = jdbcTemplate.queryForObject(query, reservationRowMapper, id);
             return Optional.ofNullable(reservation);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
