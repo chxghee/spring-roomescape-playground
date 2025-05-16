@@ -2,40 +2,43 @@ package roomescape.dao;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import roomescape.dto.ReservationRequest;
 import roomescape.entity.Reservation;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.Time;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
 public class ReservationDAO {
 
     private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
     private final ReservationRowMapper reservationRowMapper;
 
     public ReservationDAO(JdbcTemplate jdbcTemplate, ReservationRowMapper reservationRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("reservation")
+                .usingGeneratedKeyColumns("id");
         this.reservationRowMapper = reservationRowMapper;
     }
 
     public Long insert(Reservation reservation) {
-        final var query = "insert into reservation(name, date, time) values(?, ?, ?)";
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("name", reservation.getName());
+        parameters.put("date", Date.valueOf(reservation.getDate()));
+        parameters.put("time", Time.valueOf(reservation.getTime()));
 
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[]{"id"});
-            ps.setString(1, reservation.getName());
-            ps.setDate(2, java.sql.Date.valueOf(reservation.getDate()));
-            ps.setTime(3, java.sql.Time.valueOf(reservation.getTime()));
-            return ps;
-        }, keyHolder);
-
-        return keyHolder.getKey().longValue();
+        return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     public List<Reservation> findAll() {
