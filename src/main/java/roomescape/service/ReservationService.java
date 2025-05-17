@@ -5,12 +5,9 @@ import roomescape.dao.ReservationDAO;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
-import roomescape.exception.EmptyValueException;
 import roomescape.exception.NotFoundReservationException;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class ReservationService {
@@ -23,7 +20,7 @@ public class ReservationService {
 
     public List<ReservationResponse> getAllReservations() {
         return reservationDAO.findAll().stream()
-                .map(ReservationResponse::new)
+                .map(ReservationResponse::of)
                 .toList();
     }
 
@@ -31,7 +28,7 @@ public class ReservationService {
         reservationRequest.validateRequiredFields();
         Reservation newReservation = reservationRequest.toEntity();
         Long id = reservationDAO.insert(newReservation);
-        return new ReservationResponse(id, newReservation);
+        return ReservationResponse.withId(id, newReservation);
     }
 
     public void deleteReservation(Long reservationId) {

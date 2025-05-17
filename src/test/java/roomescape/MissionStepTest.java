@@ -1,10 +1,7 @@
 package roomescape;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.junit.jupiter.api.Nested;
+import roomescape.dto.ReservationResponse;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -172,36 +171,14 @@ public class MissionStepTest {
     void 육단계() {
         jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)", "브라운", LocalDate.parse("2023-08-05"), LocalTime.parse("15:40"));
 
-        List<ReservationDeserialization> reservations = RestAssured.given().log().all()
+        List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
                 .then().log().all()
                 .statusCode(200).extract()
-                .jsonPath().getList(".", ReservationDeserialization.class);
+                .jsonPath().getList(".", ReservationResponse.class);
 
         Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
 
         assertThat(reservations.size()).isEqualTo(count);
-    }
-
-
-    private static class ReservationDeserialization {
-
-        private final Long id;
-        private final String name;
-        private final LocalDate date;
-        private final String time;
-
-        @JsonCreator
-        protected ReservationDeserialization(
-                @JsonProperty("id") Long id,
-                @JsonProperty("name") String name,
-                @JsonProperty("date") LocalDate date,
-                @JsonProperty("time") String time
-        ) {
-            this.id = id;
-            this.name = name;
-            this.date = date;
-            this.time = time;
-        }
     }
 }
