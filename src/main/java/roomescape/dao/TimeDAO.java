@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import roomescape.entity.Time;
 
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,16 @@ public class TimeDAO {
 
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<Time> findByTime(LocalTime time) {
+        final String sql = "select * from time where time = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, time));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

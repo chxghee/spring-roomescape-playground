@@ -24,7 +24,7 @@ public class ReservationResponse {
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+                reservation.getTime().getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
         );
     }
 
@@ -33,7 +33,7 @@ public class ReservationResponse {
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+                reservation.getTime().getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
         );
     }
 

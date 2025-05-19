@@ -1,6 +1,7 @@
 package roomescape.dto;
 
 import roomescape.entity.Reservation;
+import roomescape.entity.Time;
 import roomescape.exception.EmptyValueException;
 import roomescape.utils.DateTimeParser;
 
@@ -20,8 +21,8 @@ public class ReservationRequest {
         this.time = time;
     }
 
-    public Reservation toEntity() {
-        return new Reservation(name, DateTimeParser.parseDate(date), DateTimeParser.parseTime(time));
+    public Reservation toEntity(Time time) {
+        return new Reservation(name, DateTimeParser.parseDate(date), time);
     }
 
     public void validateRequiredFields() {

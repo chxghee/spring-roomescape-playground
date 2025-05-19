@@ -23,6 +23,9 @@ public class ReservationDAO {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
     private final ReservationRowMapper reservationRowMapper;
+    private final String FIND_QUERY = "select r.id as reservation_id, r.name, r.date, t.id as time_id, t.time as time_value " +
+                                    "from reservation as r " +
+                                    "inner join time as t on r.time_id = t.id ";
 
     public ReservationDAO(JdbcTemplate jdbcTemplate, ReservationRowMapper reservationRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
@@ -36,19 +39,17 @@ public class ReservationDAO {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("name", reservation.getName());
         parameters.put("date", Date.valueOf(reservation.getDate()));
-        parameters.put("time", Time.valueOf(reservation.getTime()));
+        parameters.put("time_id", reservation.getTime().getId());
 
         return simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
     }
 
     public List<Reservation> findAll() {
-        final var query = "select * from reservation";
-
-        return jdbcTemplate.query(query, reservationRowMapper);
+        return jdbcTemplate.query(FIND_QUERY, reservationRowMapper);
     }
 
     public Optional<Reservation> findById(Long id) {
-        final var query = "select * from reservation where id = ?";
+        final String query = FIND_QUERY + " where r.id = ?";
 
         try {
             Reservation reservation = jdbcTemplate.queryForObject(query, reservationRowMapper, id);
@@ -59,16 +60,15 @@ public class ReservationDAO {
     }
 
     public void update(Long reservationId, ReservationRequest reservationRequest) {
-        final var query = "update reservation set name = ?, date = ?, time = ? where id = ?";
+        final String query = "update reservation set name = ?, date = ? where id = ?";
         jdbcTemplate.update(query,
                 reservationRequest.getName(),
                 reservationRequest.getDate(),
-                reservationRequest.getTime(),
                 reservationId);
     }
 
     public void delete(Long reservationId) {
-        final var query = "delete from reservation where id = ?";
+        final String query = "delete from reservation where id = ?";
         jdbcTemplate.update(query, reservationId);
     }
 }
