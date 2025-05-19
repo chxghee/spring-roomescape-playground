@@ -212,11 +212,22 @@ public class MissionStepTest {
     @Nested
     class 팔단계 {
 
-        @Test
-        void asd() {
-
+        @BeforeEach
+        void setUp() {
             Map<String, String> params = new HashMap<>();
             params.put("time", "10:00");
+
+            RestAssured.given()
+                    .contentType(ContentType.JSON)
+                    .body(params)
+                    .when().post("/times");
+        }
+
+
+        @Test
+        void 시간_등록이_성공하면_201_상태코드를_응답해야한다() {
+            Map<String, String> params = new HashMap<>();
+            params.put("time", "18:00");
 
             RestAssured.given().log().all()
                     .contentType(ContentType.JSON)
@@ -225,6 +236,16 @@ public class MissionStepTest {
                     .then().log().all()
                     .statusCode(201)
                     .header("Location", "/times");
+        }
+
+        @Test
+        void 시간조회가_성공하면_200_상태코드를_응답해야한다() {
+
+            RestAssured.given().log().all()
+                    .when().get("/times")
+                    .then().log().all()
+                    .statusCode(200)
+                    .body("size()", is(1));
         }
 
     }

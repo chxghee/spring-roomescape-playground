@@ -14,6 +14,13 @@ public class TimeResponse {
         this.time = time;
     }
 
+    public static TimeResponse of(Time time) {
+        return new TimeResponse(
+                time.getId(),
+                time.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+        );
+    }
+
     public static TimeResponse withId(Long id, Time time) {
         return new TimeResponse(
                 id,

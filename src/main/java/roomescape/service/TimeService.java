@@ -6,6 +6,8 @@ import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.entity.Time;
 
+import java.util.List;
+
 @Service
 public class TimeService {
 
@@ -20,6 +22,12 @@ public class TimeService {
         Time newTime = timeRequest.toEntity();
         Long newTimeId = timeDAO.insert(newTime);
         return TimeResponse.withId(newTimeId, newTime);
+    }
+
+    public List<TimeResponse> getAllTimeTable() {
+        return timeDAO.findAll().stream()
+                .map(TimeResponse::of)
+                .toList();
     }
 
 
