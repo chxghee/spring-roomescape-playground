@@ -5,6 +5,7 @@ import roomescape.dao.TimeDAO;
 import roomescape.dto.TimeRequest;
 import roomescape.dto.TimeResponse;
 import roomescape.entity.Time;
+import roomescape.exception.NotFoundException;
 
 import java.util.List;
 
@@ -30,5 +31,11 @@ public class TimeService {
                 .toList();
     }
 
+    public void deleteTimeTable(Long timeId) {
+        if (timeDAO.findById(timeId).isEmpty()) {
+            throw new NotFoundException("시간 정보 없음", "삭제 요청한 " + timeId + "번 타임은 존재하지 않습니다!");
+        }
+        timeDAO.delete(timeId);
+    }
 
 }

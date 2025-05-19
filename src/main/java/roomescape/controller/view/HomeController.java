@@ -15,4 +15,9 @@ public class HomeController {
     public String reservations() {
         return "reservation";
     }
+
+    @GetMapping("/time")
+    public String time() {
+        return "time";
+    }
 }

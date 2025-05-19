@@ -5,7 +5,7 @@ import roomescape.dao.ReservationDAO;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.entity.Reservation;
-import roomescape.exception.NotFoundReservationException;
+import roomescape.exception.NotFoundException;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class ReservationService {
     public void deleteReservation(Long reservationId) {
 
         if (reservationDAO.findById(reservationId).isEmpty()) {
-            throw new NotFoundReservationException("예약 정보 없음", "삭제 요청한 " + reservationId + "번 예약은 존재하지 않습니다!");
+            throw new NotFoundException("예약 정보 없음", "삭제 요청한 " + reservationId + "번 예약은 존재하지 않습니다!");
         }
         reservationDAO.delete(reservationId);
     }

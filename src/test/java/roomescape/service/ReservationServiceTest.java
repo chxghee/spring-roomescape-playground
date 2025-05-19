@@ -4,12 +4,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
 import roomescape.exception.EmptyValueException;
-import roomescape.exception.NotFoundReservationException;
+import roomescape.exception.NotFoundException;
 
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class ReservationServiceTest {
     void 삭제_요청한_예약번호가_존재하지_않으면_예외가_발생해야한다() {
         Long reservationId = 1L;
         assertThatThrownBy(() -> reservationService.deleteReservation(reservationId))
-                .isInstanceOf(NotFoundReservationException.class);
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test

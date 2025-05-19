@@ -1,5 +1,6 @@
 package roomescape.dao;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -8,6 +9,7 @@ import roomescape.entity.Time;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class TimeDAO {
@@ -36,5 +38,19 @@ public class TimeDAO {
         return jdbcTemplate.query(sql, timeRowMapper);
     }
 
+    public Optional<Time> findById(Long id) {
+        final String sql = "select * from time where id = ?";
+
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(sql, timeRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void delete(Long timeId) {
+        final String sql = "delete from time where id = ?";
+        jdbcTemplate.update(sql, timeId);
+    }
 
 }

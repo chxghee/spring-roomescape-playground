@@ -30,4 +30,10 @@ public class TimeApiController {
     public ResponseEntity<List<TimeResponse>> getAllTimeTable() {
         return ResponseEntity.ok(timeService.getAllTimeTable());
     }
+
+    @DeleteMapping("/{timeId}")
+    public ResponseEntity<Void> deleteTimeTable(@PathVariable("timeId") Long timeId) {
+        timeService.deleteTimeTable(timeId);
+        return ResponseEntity.noContent().build();
+    }
 }

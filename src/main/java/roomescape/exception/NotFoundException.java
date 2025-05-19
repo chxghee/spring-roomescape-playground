@@ -1,10 +1,10 @@
 package roomescape.exception;
 
-public class NotFoundReservationException extends RuntimeException {
+public class NotFoundException extends RuntimeException {
 
     private final String title;
 
-    public NotFoundReservationException(String title, String message) {
+    public NotFoundException(String title, String message) {
         super(message);
         this.title = title;
     }

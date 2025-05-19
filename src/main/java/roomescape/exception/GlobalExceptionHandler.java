@@ -12,8 +12,8 @@ import java.time.format.DateTimeParseException;
 public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(NotFoundReservationException.class)
-    public ErrorResult notFoundReservationExceptionHandler(NotFoundReservationException e, HttpServletRequest request) {
+    @ExceptionHandler(NotFoundException.class)
+    public ErrorResult notFoundException(NotFoundException e, HttpServletRequest request) {
         return new ErrorResult(e.getTitle(), 400, e.getMessage(), request.getRequestURI());
     }
 

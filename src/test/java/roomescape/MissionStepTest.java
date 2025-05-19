@@ -248,5 +248,12 @@ public class MissionStepTest {
                     .body("size()", is(1));
         }
 
+        @Test
+        void 시간이_삭제되면_204_상태코드를_응답해야_한다() {
+            RestAssured.given().log().all()
+                    .when().delete("/times/1")
+                    .then().log().all()
+                    .statusCode(204);
+        }
     }
 }
