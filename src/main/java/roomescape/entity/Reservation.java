@@ -11,8 +11,6 @@ public class Reservation {
     private LocalDate date;
     private LocalTime time;
 
-    protected Reservation() {}
-
     public Reservation(Long id, String name, LocalDate date, LocalTime time) {
         this.id = id;
         this.name = name;
