@@ -1,15 +1,19 @@
 package roomescape.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+import roomescape.dao.TimeDAO;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
+import roomescape.entity.Time;
 import roomescape.exception.EmptyValueException;
 import roomescape.exception.NotFoundException;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -21,6 +25,16 @@ public class ReservationServiceTest {
 
     @Autowired
     private ReservationService reservationService;
+    @Autowired
+    private TimeDAO timeDAO;
+    private Time time;
+
+    @BeforeEach
+    void setUp() {
+        LocalTime insetTime = LocalTime.parse("12:00");
+        Long timeId = timeDAO.insert(new Time(insetTime));
+        time = new Time(timeId, insetTime);
+    }
 
     @Test
     void 예약_추가시_공백인_항목이_있으면_예외가_발생해야_한다() {
@@ -51,7 +65,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약을_추가하면_조회시_포함되어야_한다() {
-        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", "15:40");
+        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", "12:00");
         reservationService.createReservation(request);
 
         List<ReservationResponse> allReservations = reservationService.getAllReservations();
@@ -61,7 +75,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약을_삭제하면_조회시_포함되지_말아야_한다() {
-        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", "15:40");
+        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", "12:00");
         ReservationResponse reservation = reservationService.createReservation(request);
         Long reservationId = reservation.getId();
 

@@ -7,12 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.junit.jupiter.api.Nested;
 import roomescape.dto.ReservationResponse;
+import roomescape.entity.Time;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -28,6 +33,22 @@ public class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    private Time time;
+
+    @BeforeEach
+    void setUp() {
+        final String sql = "insert into time (time) values (?)";
+        LocalTime insertTime = LocalTime.parse("15:40");
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setTime(1, java.sql.Time.valueOf(insertTime));
+            return ps;
+        }, keyHolder);
+        Long timeId = keyHolder.getKey().longValue();
+
+        time = new Time(timeId, insertTime);
+    }
 
     @Test
     void 일단계() {
@@ -169,7 +190,7 @@ public class MissionStepTest {
 
     @Test
     void 육단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time) VALUES (?, ?, ?)", "브라운", LocalDate.parse("2023-08-05"), LocalTime.parse("15:40"));
+        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", LocalDate.parse("2023-08-05"), time.getId());
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -187,7 +208,7 @@ public class MissionStepTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "브라운");
         params.put("date", "2023-08-05");
-        params.put("time", "10:00");
+        params.put("time", "15:40");
 
         RestAssured.given().log().all()
                 .contentType(ContentType.JSON)
@@ -245,7 +266,7 @@ public class MissionStepTest {
                     .when().get("/times")
                     .then().log().all()
                     .statusCode(200)
-                    .body("size()", is(1));
+                    .body("size()", is(2));
         }
 
         @Test
