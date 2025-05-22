@@ -1,6 +1,7 @@
 package roomescape.dto;
 
 import roomescape.entity.Reservation;
+import roomescape.entity.Time;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,13 +11,13 @@ public class ReservationResponse {
     private final Long id;
     private final String name;
     private final LocalDate date;
-    private final String time;
+    private final TimeResponse time;
 
-    public ReservationResponse(Long id, String name, LocalDate date, String time) {
+    public ReservationResponse(Long id, String name, LocalDate date, Time time) {
         this.id = id;
         this.name = name;
         this.date = date;
-        this.time = time;
+        this.time = TimeResponse.of(time);
     }
 
     public static ReservationResponse of(Reservation reservation) {
@@ -24,7 +25,7 @@ public class ReservationResponse {
                 reservation.getId(),
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime().getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+                reservation.getTime()
         );
     }
 
@@ -33,7 +34,7 @@ public class ReservationResponse {
                 id,
                 reservation.getName(),
                 reservation.getDate(),
-                reservation.getTime().getTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+                reservation.getTime()
         );
     }
 
@@ -49,7 +50,7 @@ public class ReservationResponse {
         return date;
     }
 
-    public String getTime() {
+    public TimeResponse getTime() {
         return time;
     }
 }

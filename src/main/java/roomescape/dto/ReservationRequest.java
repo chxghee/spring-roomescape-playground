@@ -13,9 +13,9 @@ public class ReservationRequest {
 
     private final String date;
     private final String name;
-    private final String time;
+    private final Long time;
 
-    public ReservationRequest(String date, String name, String time) {
+    public ReservationRequest(String date, String name, Long time) {
         this.date = date;
         this.name = name;
         this.time = time;
@@ -40,7 +40,7 @@ public class ReservationRequest {
         if (name == null || name.isBlank()) {
             results.add("name");
         }
-        if (time == null || time.isBlank()) {
+        if (time == null) {
             results.add("time");
         }
         return results;
@@ -54,7 +54,7 @@ public class ReservationRequest {
         return name;
     }
 
-    public String getTime() {
+    public Long getTime() {
         return time;
     }
 }

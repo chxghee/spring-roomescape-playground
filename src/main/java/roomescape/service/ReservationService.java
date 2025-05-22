@@ -38,9 +38,9 @@ public class ReservationService {
         return ReservationResponse.withId(id, newReservation);
     }
 
-    private Time getReservationTimeAt(String reservationTime) {
-        return timeDAO.findByTime(LocalTime.parse(reservationTime))
-                .orElseThrow(() -> new NotFoundException("시간 정보 없음", "예약을 요청한 " + reservationTime + " 타임은 존재하지 않습니다!"));
+    private Time getReservationTimeAt(Long reservationTime) {
+        return timeDAO.findById(reservationTime)
+                .orElseThrow(() -> new NotFoundException("시간 정보 없음", "예약을 요청한 " + reservationTime + "번 타임은 존재하지 않습니다!"));
     }
 
     public void deleteReservation(Long reservationId) {

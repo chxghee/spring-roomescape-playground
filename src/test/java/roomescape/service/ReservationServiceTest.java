@@ -38,14 +38,14 @@ public class ReservationServiceTest {
 
     @Test
     void 예약_추가시_공백인_항목이_있으면_예외가_발생해야_한다() {
-        ReservationRequest reservationRequest = new ReservationRequest("2025-05-08", "", "12:00");
+        ReservationRequest reservationRequest = new ReservationRequest("2025-05-08", "", time.getId());
         assertThatThrownBy(() -> reservationService.createReservation(reservationRequest))
                 .isInstanceOf(EmptyValueException.class);
     }
 
     @Test
     void 예약_추가에_성공하면_예약번호가_생성되어야_한다() {
-        ReservationRequest reservationRequest = new ReservationRequest("2025-05-08", "브라운", "12:00");
+        ReservationRequest reservationRequest = new ReservationRequest("2025-05-08", "브라운", time.getId());
         ReservationResponse reservation = reservationService.createReservation(reservationRequest);
         assertThat(reservation.getId()).isInstanceOf(Long.class);
     }
@@ -65,7 +65,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약을_추가하면_조회시_포함되어야_한다() {
-        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", "12:00");
+        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", time.getId());
         reservationService.createReservation(request);
 
         List<ReservationResponse> allReservations = reservationService.getAllReservations();
@@ -75,7 +75,7 @@ public class ReservationServiceTest {
 
     @Test
     void 예약을_삭제하면_조회시_포함되지_말아야_한다() {
-        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", "12:00");
+        ReservationRequest request = new ReservationRequest("2023-08-05", "브라운", time.getId());
         ReservationResponse reservation = reservationService.createReservation(request);
         Long reservationId = reservation.getId();
 

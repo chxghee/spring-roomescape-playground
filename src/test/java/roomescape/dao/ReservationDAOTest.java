@@ -91,7 +91,7 @@ public class ReservationDAOTest {
     @Test
     void updateReservation() {
         Long id = reservationDAO.insert(new Reservation("이창희", LocalDate.now(), time));
-        ReservationRequest updateRequest = new ReservationRequest("2025-05-05", "전서희", "12:00");
+        ReservationRequest updateRequest = new ReservationRequest("2025-05-05", "전서희", time.getId());
 
         reservationDAO.update(id, updateRequest);
         Optional<Reservation> updatedReservation = reservationDAO.findById(id);
@@ -100,7 +100,7 @@ public class ReservationDAOTest {
             soft.assertThat(updatedReservation).isPresent();
             soft.assertThat(updatedReservation.get().getName()).isEqualTo(updateRequest.getName());
             soft.assertThat(updatedReservation.get().getDate()).isEqualTo(updateRequest.getDate());
-            soft.assertThat(updatedReservation.get().getTime().getTime()).isEqualTo(updateRequest.getTime());
+            soft.assertThat(updatedReservation.get().getTime().getId()).isEqualTo(updateRequest.getTime());
         });
     }
 
