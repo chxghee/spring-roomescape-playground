@@ -9,9 +9,7 @@ import roomescape.entity.Reservation;
 import roomescape.entity.Time;
 import roomescape.exception.NotFoundException;
 
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReservationService {
@@ -26,7 +24,7 @@ public class ReservationService {
 
     public List<ReservationResponse> getAllReservations() {
         return reservationDAO.findAll().stream()
-                .map(ReservationResponse::of)
+                .map(ReservationResponse::from)
                 .toList();
     }
 

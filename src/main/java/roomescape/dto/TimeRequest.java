@@ -15,7 +15,6 @@ public class TimeRequest {
         this.time = time;
     }
 
-
     public Time toEntity() {
         return new Time(DateTimeParser.parseTime(time));
     }

@@ -27,7 +27,7 @@ public class TimeService {
 
     public List<TimeResponse> getAllTimeTable() {
         return timeDAO.findAll().stream()
-                .map(TimeResponse::of)
+                .map(TimeResponse::from)
                 .toList();
     }
 

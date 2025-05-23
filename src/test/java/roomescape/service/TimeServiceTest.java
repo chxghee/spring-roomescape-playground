@@ -66,6 +66,6 @@ public class TimeServiceTest {
 
         List<TimeResponse> allTimes = timeService.getAllTimeTable();
         assertThat(allTimes).hasSize(0);
-        assertThat(allTimes).noneMatch(r -> r.getId().equals(timeId));
+        assertThat(allTimes).noneMatch(t -> t.getId().equals(timeId));
     }
 }

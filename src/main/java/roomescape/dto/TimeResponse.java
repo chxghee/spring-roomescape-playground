@@ -14,7 +14,7 @@ public class TimeResponse {
         this.time = time;
     }
 
-    public static TimeResponse of(Time time) {
+    public static TimeResponse from(Time time) {
         return new TimeResponse(
                 time.getId(),
                 time.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))

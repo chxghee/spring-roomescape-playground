@@ -4,7 +4,6 @@ import roomescape.entity.Reservation;
 import roomescape.entity.Time;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 public class ReservationResponse {
 
@@ -17,10 +16,10 @@ public class ReservationResponse {
         this.id = id;
         this.name = name;
         this.date = date;
-        this.time = TimeResponse.of(time);
+        this.time = TimeResponse.from(time);
     }
 
-    public static ReservationResponse of(Reservation reservation) {
+    public static ReservationResponse from(Reservation reservation) {
         return new ReservationResponse(
                 reservation.getId(),
                 reservation.getName(),

@@ -25,11 +25,7 @@ public class ReservationApiController {
 
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> getReservations() {
-        List<ReservationResponse> allReservations = reservationService.getAllReservations();
-        for (ReservationResponse allReservation : allReservations) {
-            System.out.println(allReservation.getName() + " " + allReservation.getTime());
-        }
-        return ResponseEntity.ok(allReservations);
+        return ResponseEntity.ok(reservationService.getAllReservations());
     }
 
     @PostMapping

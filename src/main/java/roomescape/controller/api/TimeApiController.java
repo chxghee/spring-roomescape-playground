@@ -21,6 +21,7 @@ public class TimeApiController {
 
     @PostMapping
     public ResponseEntity<TimeResponse> createTimeTable(@RequestBody TimeRequest timeRequest) {
+        timeRequest.validateRequiredField();
         TimeResponse timeTable = timeService.createTimeTable(timeRequest);
         return ResponseEntity.created(URI.create("/times"))
                 .body(timeTable);
