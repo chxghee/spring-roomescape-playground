@@ -33,21 +33,15 @@ public class ReservationDAOTest {
     private ReservationDAO reservationDAO;
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private TimeDAO timeDAO;
     private Time time;
 
     @BeforeEach
     void setUp() {
-        final String sql = "insert into time (time) values (?)";
-        LocalTime insertTime = LocalTime.parse("12:00");
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setTime(1, java.sql.Time.valueOf(insertTime));
-            return ps;
-        }, keyHolder);
-        Long timeId = keyHolder.getKey().longValue();
-
-        time = new Time(timeId, insertTime);
+        LocalTime sampleTime = LocalTime.parse("12:00");
+        Long timeId = timeDAO.insert(new Time(sampleTime));
+        time = new Time(timeId, sampleTime);
     }
 
     @Test
