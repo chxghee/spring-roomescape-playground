@@ -1,16 +1,12 @@
 package roomescape.controller.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import roomescape.dto.ReservationRequest;
 import roomescape.dto.ReservationResponse;
-import roomescape.entity.Reservation;
 import roomescape.service.ReservationService;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
