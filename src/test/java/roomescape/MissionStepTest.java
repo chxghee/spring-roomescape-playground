@@ -7,17 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.junit.jupiter.api.Nested;
+import roomescape.dao.ReservationDAO;
+import roomescape.dao.TimeDAO;
 import roomescape.dto.ReservationResponse;
+import roomescape.entity.Reservation;
 import roomescape.entity.Time;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -33,20 +32,16 @@ public class MissionStepTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private TimeDAO timeDAO;
+    @Autowired
+    private ReservationDAO reservationDAO;
     private Time time;
 
     @BeforeEach
     void setUp() {
-        final String sql = "insert into time (time) values (?)";
         LocalTime insertTime = LocalTime.parse("15:40");
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            ps.setTime(1, java.sql.Time.valueOf(insertTime));
-            return ps;
-        }, keyHolder);
-        Long timeId = keyHolder.getKey().longValue();
-
+        Long timeId = timeDAO.insert(new Time(insertTime));
         time = new Time(timeId, insertTime);
     }
 
@@ -190,7 +185,7 @@ public class MissionStepTest {
 
     @Test
     void 육단계() {
-        jdbcTemplate.update("INSERT INTO reservation (name, date, time_id) VALUES (?, ?, ?)", "브라운", LocalDate.parse("2023-08-05"), time.getId());
+        reservationDAO.insert(new Reservation("브라운", LocalDate.parse("2023-08-05"),time));
 
         List<ReservationResponse> reservations = RestAssured.given().log().all()
                 .when().get("/reservations")
@@ -198,9 +193,9 @@ public class MissionStepTest {
                 .statusCode(200).extract()
                 .jsonPath().getList(".", ReservationResponse.class);
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        List<Reservation> findReservation = reservationDAO.findAll();
 
-        assertThat(reservations.size()).isEqualTo(count);
+        assertThat(reservations.size()).isEqualTo(findReservation.size());
     }
 
     @Test
@@ -218,7 +213,7 @@ public class MissionStepTest {
                 .statusCode(201)
                 .header("Location", "/reservations");
 
-        Integer count = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer count = reservationDAO.findAll().size();
         assertThat(count).isEqualTo(1);
 
         RestAssured.given().log().all()
@@ -226,7 +221,7 @@ public class MissionStepTest {
                 .then().log().all()
                 .statusCode(204);
 
-        Integer countAfterDelete = jdbcTemplate.queryForObject("SELECT count(1) from reservation", Integer.class);
+        Integer countAfterDelete = reservationDAO.findAll().size();
         assertThat(countAfterDelete).isEqualTo(0);
     }
 
